@@ -1,0 +1,20 @@
+{
+    "compilerOptions": {
+      "outDir": "./dist",
+      "module": "esnext",            // Changed to 'esnext' for better compatibility with modern module systems
+      "target": "es6",
+      "sourceMap": true,
+      "moduleResolution": "node",    // Ensures module resolution mimics Node.js behavior
+      "esModuleInterop": true,       // Enables default imports from CommonJS modules
+      "resolveJsonModule": true,     // Allows importing JSON files
+      "allowSyntheticDefaultImports": true,
+      "baseUrl": "./src",            // Base directory to resolve non-relative module names
+      "paths": {
+        "*": ["node_modules/*", "src/types/*"] 
+      }
+    },
+    "exclude": [
+      "node_modules"
+    ]
+  }
+  

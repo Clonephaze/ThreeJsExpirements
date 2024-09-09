@@ -1,0 +1,24 @@
+@import '../../node_modules/normalize-scss/sass/normalize.scss';
+
+:root {
+    --color-one: limegreen;
+}
+
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+html {
+    height: 100lvh;
+    width: 100vw;
+}
+
+body{
+    height: 100%;
+    width: 100%;
+    background-color: var(--color-one);
+}
