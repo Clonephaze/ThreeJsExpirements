@@ -2,7 +2,7 @@
   !*** css ./node_modules/css-loader/dist/cjs.js!./node_modules/sass-loader/dist/cjs.js!./src/scss/style.scss ***!
   \**************************************************************************************************************/
 :root {
-  --color-one: lch(34 40 316);
+  --color-one: lch(50 0 316);
 }
 
 * {
