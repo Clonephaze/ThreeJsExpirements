@@ -241,37 +241,61 @@ function startThree() {
     let theta = 0; // horizontal rotation angle
     let phi = 0; // vertical rotation angle
     const radius = 5; // distance from center to "look at" point (adjust as needed)
-    // Add pointer support for both touch and mouse interactions
-    canvas.addEventListener('pointerdown', onPointerDown);
-    canvas.addEventListener('pointermove', onPointerMove);
-    canvas.addEventListener('pointerup', onPointerUp);
-    canvas.addEventListener('pointercancel', onPointerUp);
-    let isDragging = false;
+    // Initialize previous mouse/touch position and dragging state
     let previousMousePosition = { x: 0, y: 0 };
-    // Handle pointer down (works for both mouse and touch)
+    let isDragging = false;
+    // Handle pointer down (mouse or touch) event
     function onPointerDown(event) {
-        isDragging = true;
-        previousMousePosition = { x: event.clientX, y: event.clientY };
-        console.log('Pointer down:', previousMousePosition); // Debugging
-        event.preventDefault();
+        if (event.type === 'pointerdown' || event.type === 'touchstart') {
+            isDragging = true;
+            if (event.type === 'touchstart') {
+                const touch = event.touches[0];
+                previousMousePosition = { x: touch.clientX, y: touch.clientY };
+            }
+            else {
+                previousMousePosition = { x: event.clientX, y: event.clientY };
+            }
+            event.preventDefault();
+        }
     }
-    // Handle pointer move (works for both mouse and touch)
+    // Handle pointer move (mouse or touch) event
     function onPointerMove(event) {
         if (!isDragging)
             return;
-        const deltaX = event.clientX - previousMousePosition.x;
-        const deltaY = event.clientY - previousMousePosition.y;
-        console.log('Pointer move', deltaX, deltaY); // Debugging
+        let clientX;
+        let clientY;
+        if (event.type === 'touchmove') {
+            const touch = event.touches[0];
+            clientX = touch.clientX;
+            clientY = touch.clientY;
+        }
+        else {
+            clientX = event.clientX;
+            clientY = event.clientY;
+        }
+        const deltaX = clientX - previousMousePosition.x;
+        const deltaY = clientY - previousMousePosition.y;
+        // Debugging
         theta -= deltaX * 0.01; // Horizontal angle
         phi -= deltaY * 0.01; // Vertical angle
         phi = Math.max(-Math.PI / 2, Math.min(Math.PI / 2, phi));
-        previousMousePosition = { x: event.clientX, y: event.clientY };
+        previousMousePosition = { x: clientX, y: clientY };
         event.preventDefault();
     }
-    // Handle pointer up (works for both mouse and touch)
-    function onPointerUp() {
-        isDragging = false;
+    // Handle pointer up (mouse or touch) event
+    function onPointerUp(event) {
+        if (event.type === 'pointerup' || event.type === 'touchend') {
+            isDragging = false;
+            event.preventDefault();
+        }
     }
+    // Add event listeners for both mouse and touch events
+    document.addEventListener('pointerdown', onPointerDown);
+    document.addEventListener('pointermove', onPointerMove);
+    document.addEventListener('pointerup', onPointerUp);
+    document.addEventListener('touchstart', onPointerDown, { passive: false });
+    document.addEventListener('touchmove', onPointerMove, { passive: false });
+    document.addEventListener('touchend', onPointerUp);
     // Animation loop
     function animate() {
         const x = radius * Math.sin(theta) * Math.cos(phi);
@@ -289,7 +313,6 @@ function startThree() {
         camera.aspect = width / height;
         camera.updateProjectionMatrix();
     });
-    console.log('Loaded three.js');
 }
 
 
