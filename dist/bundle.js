@@ -193,125 +193,177 @@ function setupNavigation() {
 
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   startThree: () => (/* binding */ startThree)
+/* harmony export */   initThreeJS: () => (/* binding */ initThreeJS)
 /* harmony export */ });
 /* harmony import */ var three__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! three */ "./node_modules/three/build/three.module.js");
-/* harmony import */ var three_addons_loaders_GLTFLoader_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! three/addons/loaders/GLTFLoader.js */ "./node_modules/three/examples/jsm/loaders/GLTFLoader.js");
+/* harmony import */ var three_examples_jsm_loaders_GLTFLoader__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! three/examples/jsm/loaders/GLTFLoader */ "./node_modules/three/examples/jsm/loaders/GLTFLoader.js");
 
 
-function startThree() {
+/**
+ * Initializes the Three.js scene, setting up the camera, lights, and model,
+ * and starts the animation loop. Also handles resizing events.
+ */
+function initThreeJS() {
+    const { scene, camera, renderer } = setupScene(); // Set up the basic Three.js scene
+    setupLights(scene); // Add lighting to the scene
+    loadModel(scene); // Load the 3D model into the scene
+    const controls = setupCameraControls(camera); // Configure controls for user interaction
+    // Create and start the animation loop
+    const animate = createAnimationLoop(scene, camera, renderer, controls);
+    renderer.setAnimationLoop(animate);
+    // Handle browser window resizing
+    handleWindowResize(camera, renderer);
+}
+/**
+ * Sets up the basic scene, including the canvas, camera, and renderer.
+ * @returns An object containing the Three.js scene, camera, and renderer.
+ */
+function setupScene() {
     const canvas = document.getElementById('threeCanvas');
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
-    const scene = new three__WEBPACK_IMPORTED_MODULE_0__.Scene();
-    scene.background = null; // Transparent background
-    // Camera
+    const scene = new three__WEBPACK_IMPORTED_MODULE_0__.Scene(); // Create a new Three.js scene
+    scene.background = null; // Set the scene background to transparent
+    // Create a perspective camera with a field of view of 75 degrees
     const camera = new three__WEBPACK_IMPORTED_MODULE_0__.PerspectiveCamera(75, canvas.clientWidth / canvas.clientHeight);
-    // Raise the camera's Y position above the floor (e.g., 2 units above the floor)
-    const cameraHeight = 30;
-    camera.position.set(0, cameraHeight, 0); // The camera is now higher in the room
-    // Lights
-    const ambientLight = new three__WEBPACK_IMPORTED_MODULE_0__.AmbientLight(0xffffff, 0.5);
-    scene.add(ambientLight);
-    const directionalLight = new three__WEBPACK_IMPORTED_MODULE_0__.DirectionalLight(0xffffff, 0.5);
-    directionalLight.position.set(0, 10, 10);
-    scene.add(directionalLight);
-    const pointLight = new three__WEBPACK_IMPORTED_MODULE_0__.PointLight(0xffffff, 0.5);
-    pointLight.position.set(0, 10, 10);
-    scene.add(pointLight);
-    // Renderer
+    camera.position.set(0, 30, 0); // Position the camera above the origin, looking down
+    // Set up the renderer with antialiasing and alpha transparency enabled
     const renderer = new three__WEBPACK_IMPORTED_MODULE_0__.WebGLRenderer({
-        canvas: canvas,
-        antialias: true,
-        alpha: true
+        canvas, // Sets the canvas to the canvas element, since they're the same name it doesn't need to be specified
+        antialias: true, // Enables antialiasing, for smoother rendering
+        alpha: true, // Enables alpha transparency for the renderer
     });
-    renderer.setSize(canvas.clientWidth, canvas.clientHeight);
-    renderer.setPixelRatio(window.devicePixelRatio); // Ensure sharp rendering
-    // GLTF Loader
-    const loader = new three_addons_loaders_GLTFLoader_js__WEBPACK_IMPORTED_MODULE_1__.GLTFLoader();
-    loader.load('./src/Models/lowPolyLivingRoom.gltf', function (gltf) {
-        scene.add(gltf.scene);
-        // Adjust model's position and scale
-        gltf.scene.position.set(0, -1, 0);
-        gltf.scene.scale.set(0.25, 0.25, 0.25);
-        // Optional: bounding box log to check the model's size
-        const box = new three__WEBPACK_IMPORTED_MODULE_0__.Box3().setFromObject(gltf.scene);
+    renderer.setSize(canvas.clientWidth, canvas.clientHeight); // Set renderer size to canvas size
+    renderer.setPixelRatio(window.devicePixelRatio); // Adjust rendering for high-DPI displays
+    return { scene, camera, renderer }; // Return the scene, camera, and renderer
+}
+/**
+ * Adds ambient, directional, and point lights to the scene.
+ * @param scene - The Three.js scene to add lights to.
+ * @returns void
+ */
+function setupLights(scene) {
+    const ambientLight = new three__WEBPACK_IMPORTED_MODULE_0__.AmbientLight(0xffffff, 1); // Soft light from all directions
+    const directionalLight = new three__WEBPACK_IMPORTED_MODULE_0__.DirectionalLight(0xffffff, 0.5); // Light from one direction
+    const pointLight = new three__WEBPACK_IMPORTED_MODULE_0__.PointLight(0xffffff, 0.5); // Light from a specific point
+    // Position the directional and point lights
+    directionalLight.position.set(0, 10, 10);
+    pointLight.position.set(0, 50, 0);
+    // Add the lights to the scene
+    scene.add(ambientLight, directionalLight, pointLight);
+    return;
+}
+/**
+ * Loads a GLTF 3D model and adds it to the scene.
+ * @param scene - The Three.js scene to add the model to.
+ * @returns void
+ */
+function loadModel(scene) {
+    const loader = new three_examples_jsm_loaders_GLTFLoader__WEBPACK_IMPORTED_MODULE_1__.GLTFLoader(); // Create a new GLTF loader
+    // Load the GLTF model from the specified path
+    loader.load('./src/Models/lowPolyLivingRoom.gltf', (gltf) => {
+        gltf.scene.position.set(0, -1, 0); // Adjust the model's position in the scene
+        gltf.scene.scale.set(0.25, 0.25, 0.25); // Scale the model to a quarter of its original size
+        scene.add(gltf.scene); // Add the loaded model to the scene
     });
-    // Variables for camera rotation
-    let theta = 0; // horizontal rotation angle
-    let phi = 0; // vertical rotation angle
-    const radius = 5; // distance from center to "look at" point (adjust as needed)
-    // Initialize previous mouse/touch position and dragging state
-    let previousMousePosition = { x: 0, y: 0 };
-    let isDragging = false;
-    // Handle pointer down (mouse or touch) event
-    function onPointerDown(event) {
-        if (event.type === 'pointerdown' || event.type === 'touchstart') {
-            isDragging = true;
-            if (event.type === 'touchstart') {
-                const touch = event.touches[0];
-                previousMousePosition = { x: touch.clientX, y: touch.clientY };
-            }
-            else {
-                previousMousePosition = { x: event.clientX, y: event.clientY };
-            }
-            event.preventDefault();
-        }
-    }
-    // Handle pointer move (mouse or touch) event
-    function onPointerMove(event) {
-        if (!isDragging)
-            return;
-        let clientX;
-        let clientY;
-        if (event.type === 'touchmove') {
-            const touch = event.touches[0];
-            clientX = touch.clientX;
-            clientY = touch.clientY;
-        }
-        else {
-            clientX = event.clientX;
-            clientY = event.clientY;
-        }
-        const deltaX = clientX - previousMousePosition.x;
-        const deltaY = clientY - previousMousePosition.y;
-        // Debugging
-        theta -= deltaX * 0.01; // Horizontal angle
-        phi -= deltaY * 0.01; // Vertical angle
-        phi = Math.max(-Math.PI / 2, Math.min(Math.PI / 2, phi));
-        previousMousePosition = { x: clientX, y: clientY };
-        event.preventDefault();
-    }
-    // Handle pointer up (mouse or touch) event
-    function onPointerUp(event) {
-        if (event.type === 'pointerup' || event.type === 'touchend') {
-            isDragging = false;
-            event.preventDefault();
-        }
-    }
-    // Add event listeners for both mouse and touch events
+    return;
+}
+/**
+ * Sets up camera controls to rotate based on user input (mouse or touch events).
+ * @param camera - The camera to apply the controls to.
+ * @returns An object containing the control parameters and event listeners.
+ */
+function setupCameraControls(camera) {
+    const controls = {
+        theta: 0, // Initial horizontal angle
+        phi: 0, // Initial vertical angle
+        radius: 5, // Distance from the camera's target
+        isDragging: false, // Whether the user is currently dragging
+        previousMousePosition: { x: 0, y: 0 } // Track previous mouse or touch position
+    };
+    /**
+     * Starts tracking the pointer when the user begins dragging.
+     * @param event - The pointer or touch event that starts the drag.
+     */
+    const onPointerDown = (event) => {
+        controls.isDragging = true; // Set dragging state to true
+        const clientPos = getClientPosition(event); // Get the initial pointer position
+        controls.previousMousePosition = { x: clientPos.x, y: clientPos.y }; // Store the initial pointer position
+    };
+    /**
+     * Updates the camera's rotation as the user drags.
+     * @param event - The pointer or touch event as the user moves the pointer.
+     */
+    const onPointerMove = (event) => {
+        if (!controls.isDragging)
+            return; // If not dragging, ignore the move event
+        const clientPos = getClientPosition(event); // Get the current pointer position
+        const deltaX = clientPos.x - controls.previousMousePosition.x; // Calculate horizontal movement
+        const deltaY = clientPos.y - controls.previousMousePosition.y; // Calculate vertical movement
+        // Update theta (horizontal rotation) and phi (vertical rotation) based on movement
+        controls.theta -= deltaX * 0.01;
+        controls.phi = Math.max(-Math.PI / 2, Math.min(Math.PI / 2, controls.phi - deltaY * 0.01));
+        // Store the current pointer position for the next move event
+        controls.previousMousePosition = { x: clientPos.x, y: clientPos.y };
+    };
+    /**
+     * Ends the dragging state when the pointer is released.
+     */
+    const onPointerUp = () => {
+        controls.isDragging = false; // Set dragging state to false
+    };
+    // Add event listeners for mouse and touch input
     document.addEventListener('pointerdown', onPointerDown);
     document.addEventListener('pointermove', onPointerMove);
     document.addEventListener('pointerup', onPointerUp);
     document.addEventListener('touchstart', onPointerDown, { passive: false });
     document.addEventListener('touchmove', onPointerMove, { passive: false });
     document.addEventListener('touchend', onPointerUp);
-    // Animation loop
-    function animate() {
-        const x = radius * Math.sin(theta) * Math.cos(phi);
-        const y = radius * Math.sin(phi) + cameraHeight; // Adding camera height to y-axis
-        const z = radius * Math.cos(theta) * Math.cos(phi);
-        camera.lookAt(new three__WEBPACK_IMPORTED_MODULE_0__.Vector3(x, y, z));
-        renderer.render(scene, camera);
+    return controls; // Return the controls object
+}
+/**
+ * Helper function to get the client position (x, y) from a pointer or touch event.
+ * @param event - The pointer or touch event.
+ * @returns An object with the x and y coordinates of the event.
+ */
+function getClientPosition(event) {
+    if (event instanceof TouchEvent) {
+        return { x: event.touches[0].clientX, y: event.touches[0].clientY }; // For touch events, get the first touch position
     }
-    renderer.setAnimationLoop(animate);
-    // Update canvas size on window resize
+    return { x: event.clientX, y: event.clientY }; // For pointer events, get the mouse position
+}
+/**
+ * Creates the animation loop for rendering the scene and updating the camera's view.
+ * @param scene - The Three.js scene to render.
+ * @param camera - The camera to update.
+ * @param renderer - The renderer to use for rendering the scene.
+ * @param controls - The camera controls to apply.
+ * @returns The animation loop function to be called on each frame.
+ */
+function createAnimationLoop(scene, camera, renderer, controls) {
+    return function animate() {
+        // Calculate the camera's new position based on theta and phi angles
+        const x = controls.radius * Math.sin(controls.theta) * Math.cos(controls.phi);
+        const y = controls.radius * Math.sin(controls.phi) + camera.position.y;
+        const z = controls.radius * Math.cos(controls.theta) * Math.cos(controls.phi);
+        // Make the camera look at the calculated position
+        camera.lookAt(new three__WEBPACK_IMPORTED_MODULE_0__.Vector3(x, y, z));
+        // Render the scene from the camera's perspective
+        renderer.render(scene, camera);
+    };
+}
+/**
+ * Handles window resize events to adjust the renderer and camera aspect ratio.
+ * @param camera - The camera to adjust.
+ * @param renderer - The renderer to resize.
+ */
+function handleWindowResize(camera, renderer) {
     window.addEventListener('resize', () => {
         const width = window.innerWidth;
         const height = window.innerHeight;
-        renderer.setSize(width, height);
-        camera.aspect = width / height;
-        camera.updateProjectionMatrix();
+        renderer.setSize(width, height); // Update the renderer size
+        camera.aspect = width / height; // Update the camera aspect ratio
+        camera.updateProjectionMatrix(); // Apply the changes to the camera's projection
     });
 }
 
@@ -60800,12 +60852,9 @@ __webpack_require__.r(__webpack_exports__);
 // Set up an event listener for when the page finishes loading that calls required onload functions
 window.onload = () => {
     if ((0,_pageLoader__WEBPACK_IMPORTED_MODULE_2__.loadHtmlOnLoad)()) {
-        (0,_three__WEBPACK_IMPORTED_MODULE_3__.startThree)();
+        (0,_three__WEBPACK_IMPORTED_MODULE_3__.initThreeJS)();
     }
 };
-window.addEventListener('pointerdown', (event) => {
-    console.log('pointerdown', event);
-});
 
 /******/ })()
 ;
