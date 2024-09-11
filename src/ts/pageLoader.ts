@@ -2,7 +2,7 @@ import homeTemplate from '../html/home.html';
 import aboutTemplate from '../html/about.html';
 
 // Define a flag to determine if we're running on GitHub Pages
-const isGithubPages = window.location.hostname === 'clonephaze.github.io'; // Replace with your GitHub Pages domain
+const isGithubPages = window.location.hostname === 'clonephaze.github.io';
 
 /**
  * This function takes a hash string as an argument and updates the content of the page
@@ -59,15 +59,11 @@ export function loadHtmlOnLoad(): boolean {
     const hash: string = window.location.hash.slice(1) || ''; // Get the hash from the URL
 
     // Check if the URL path contains '/ThreeJsExpirements/' for GitHub Pages
-    if (isGithubPages && urlPath.includes('/ThreeJsExpirements/')) {
-        updateContentAndTitle(hash);
-    } else {
+    if (isGithubPages && !urlPath.includes('/ThreeJsExpirements/')) {
         // Redirect to the correct path if '/ThreeJsExpirements/' is missing
-        if (isGithubPages) {
-            window.location.href = window.location.origin + '/ThreeJsExpirements/#' + hash;
-        } else {
-            updateContentAndTitle(hash);
-        }
+        window.location.href = window.location.origin + '/ThreeJsExpirements/#' + hash;
+    } else {
+        updateContentAndTitle(hash);
     }
     
     setupNavigation(); // Call the function to set up the navigation
@@ -89,15 +85,11 @@ function setupNavigation(): void {
         const hash = event.state?.hash || window.location.hash.slice(1) || '';
 
         // If the URL path contains '/ThreeJsExpirements/' for GitHub Pages, update the content and title
-        if (isGithubPages && urlPath.includes('/ThreeJsExpirements/')) {
-            updateContentAndTitle(hash);
-        } else {
+        if (isGithubPages && !urlPath.includes('/ThreeJsExpirements/')) {
             // Redirect to the correct path if '/ThreeJsExpirements/' is missing
-            if (isGithubPages) {
-                window.location.href = window.location.origin + '/ThreeJsExpirements/#' + hash;
-            } else {
-                updateContentAndTitle(hash);
-            }
+            window.location.href = window.location.origin + '/ThreeJsExpirements/#' + hash;
+        } else {
+            updateContentAndTitle(hash);
         }
     });
     return;

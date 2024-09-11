@@ -95,7 +95,7 @@ __webpack_require__.r(__webpack_exports__);
 
 
 // Define a flag to determine if we're running on GitHub Pages
-const isGithubPages = window.location.hostname === 'clonephaze.github.io'; // Replace with your GitHub Pages domain
+const isGithubPages = window.location.hostname === 'clonephaze.github.io';
 /**
  * This function takes a hash string as an argument and updates the content of the page
  * and the page title based on the hash. If the hash is invalid, it redirects to the home page.
@@ -146,17 +146,12 @@ function loadHtmlOnLoad() {
     const urlPath = window.location.pathname; // Get the URL path
     const hash = window.location.hash.slice(1) || ''; // Get the hash from the URL
     // Check if the URL path contains '/ThreeJsExpirements/' for GitHub Pages
-    if (isGithubPages && urlPath.includes('/ThreeJsExpirements/')) {
-        updateContentAndTitle(hash);
+    if (isGithubPages && !urlPath.includes('/ThreeJsExpirements/')) {
+        // Redirect to the correct path if '/ThreeJsExpirements/' is missing
+        window.location.href = window.location.origin + '/ThreeJsExpirements/#' + hash;
     }
     else {
-        // Redirect to the correct path if '/ThreeJsExpirements/' is missing
-        if (isGithubPages) {
-            window.location.href = window.location.origin + '/ThreeJsExpirements/#' + hash;
-        }
-        else {
-            updateContentAndTitle(hash);
-        }
+        updateContentAndTitle(hash);
     }
     setupNavigation(); // Call the function to set up the navigation
     loaded = true;
@@ -176,17 +171,12 @@ function setupNavigation() {
         const urlPath = window.location.pathname;
         const hash = ((_a = event.state) === null || _a === void 0 ? void 0 : _a.hash) || window.location.hash.slice(1) || '';
         // If the URL path contains '/ThreeJsExpirements/' for GitHub Pages, update the content and title
-        if (isGithubPages && urlPath.includes('/ThreeJsExpirements/')) {
-            updateContentAndTitle(hash);
+        if (isGithubPages && !urlPath.includes('/ThreeJsExpirements/')) {
+            // Redirect to the correct path if '/ThreeJsExpirements/' is missing
+            window.location.href = window.location.origin + '/ThreeJsExpirements/#' + hash;
         }
         else {
-            // Redirect to the correct path if '/ThreeJsExpirements/' is missing
-            if (isGithubPages) {
-                window.location.href = window.location.origin + '/ThreeJsExpirements/#' + hash;
-            }
-            else {
-                updateContentAndTitle(hash);
-            }
+            updateContentAndTitle(hash);
         }
     });
     return;
