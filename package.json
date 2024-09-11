@@ -5,22 +5,25 @@
   "main": "webpack.config.js",
   "scripts": {
     "build": "webpack --config webpack.config.js",
-    "start": "webpack serve --config webpack.config.js --mode development",
+    "buildSass": "sass src/scss:src/css",
+    "start": "webpack serve --config webpack.config.js --mode development --watch",
     "watch": "webpack --watch"
   },
   "devDependencies": {
     "css-loader": "^7.0.0",
+    "css-minimizer-webpack-plugin": "^7.0.0",
     "html-loader": "^5.0.0",
     "html-webpack-plugin": "^5.0.0",
-    "normalize-scss": "^8.0.0",
-    "sass": "^1.0.0",
+    "mini-css-extract-plugin": "^2.9.1",
+    "sass": "^1.78.0",
     "sass-loader": "^16.0.0",
     "style-loader": "^4.0.0",
+    "three": "^0.168.0",
     "ts-loader": "^9.0.0",
     "typescript": "^5.0.0",
     "webpack": "^5.0.0",
     "webpack-cli": "^5.0.0",
-    "webpack-dev-server": "^5.0.0"
+    "webpack-dev-server": "^5.1.0"
   },
   "repository": {
     "type": "git",
@@ -31,5 +34,9 @@
   "bugs": {
     "url": "https://github.com/Clonephaze/HtmlCssJsTsWebpackTemplate/issues"
   },
-  "homepage": "https://github.com/Clonephaze/HtmlCssJsTsWebpackTemplate#readme"
+  "homepage": "https://github.com/Clonephaze/HtmlCssJsTsWebpackTemplate#readme",
+  "dependencies": {
+    "@types/three": "^0.168.0",
+    "openssl": "^2.0.0"
+  }
 }

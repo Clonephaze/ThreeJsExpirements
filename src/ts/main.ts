@@ -5,8 +5,15 @@ import '../html/index.html';
 
 // Import the loadHtmlOnLoad and setupNavigation functions from the pageLoader module
 import { loadHtmlOnLoad } from './pageLoader';
+import { startThree } from './three';
 
 // Set up an event listener for when the page finishes loading that calls required onload functions
 window.onload = () => {
-    loadHtmlOnLoad();
+    if (loadHtmlOnLoad()) {
+        startThree();
+    }
 };
+
+window.addEventListener('pointerdown', (event) => {
+    console.log('pointerdown', event);
+})

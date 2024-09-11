@@ -7,20 +7,19 @@ import aboutTemplate from '../html/about.html';
  * and the page title based on the hash. If the hash is invalid, it redirects to the home page.
  * @param {string} hash The hash to use for updating the page.
  */
-function updateContentAndTitle(hash: string) {
+function updateContentAndTitle(hash: string): void {
     let template: string; // The html template to use for the page
     let pageTitleText: string; // The text to use for the page title
 
     // Switch statement to determine which data to use
     switch (hash) {
         case 'About':
-            template = aboutTemplate; // The About page template
-            pageTitleText = 'About'; // The page title for the About page
+            template = aboutTemplate;
+            pageTitleText = 'About';
             break;
         case 'Home':
-            template = homeTemplate; // The Home page template
-            pageTitleText = 'Home'; // The page title for the Home page
-             // Log the hash for debugging purposes
+            template = homeTemplate; 
+            pageTitleText = 'Home';
             break;
         default:
             // If the hash is invalid, use the Home page template and page title
@@ -41,17 +40,20 @@ function updateContentAndTitle(hash: string) {
 
     // Update the page title
     document.title = pageTitleText;
+    return;
 }
 
 /**
  * This function is called when the page loads and it updates the page content and title
- * based on the hash in the URL.
+ * based on the hash in the URL, then returns a boolean value indicating if the page has finished loading.
  */
-export function loadHtmlOnLoad() {
+export function loadHtmlOnLoad(): boolean {
+    let loaded: boolean = false;
     const hash: string = window.location.hash.slice(1) || ''; // Get the hash from the URL
     updateContentAndTitle(hash); // Call the function to update the page content and title
-
-    setupNavigation();
+    setupNavigation(); // Call the function to set up the navigation
+    loaded = true;
+    return loaded;
 }
 
 /**
@@ -60,8 +62,7 @@ export function loadHtmlOnLoad() {
  * The event handler function is called when the event is fired and it updates the page content and title
  * based on the hash in the URL.
  */
-function setupNavigation() {
-
+function setupNavigation(): void {
     // Add an event listener to the window object for the popstate event
     window.addEventListener('popstate', (event: PopStateEvent) => {
         // Get the hash from the event state or the current URL if the event state is null
@@ -70,4 +71,5 @@ function setupNavigation() {
         // Call the function to update the page content and title
         updateContentAndTitle(hash);
     });
+    return;
 }

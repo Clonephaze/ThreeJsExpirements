@@ -1,24 +1,30 @@
-@import '../../node_modules/normalize-scss/sass/normalize.scss';
-
 :root {
-    --color-one: limegreen;
+    --color-one: lch(34 40 316);
 }
 
-*,
-*::before,
-*::after {
+* {
     box-sizing: border-box;
-    margin: 0;
-    padding: 0;
-}
-
-html {
-    height: 100lvh;
-    width: 100vw;
 }
 
 body{
-    height: 100%;
-    width: 100%;
+    margin: 0;
+    padding: 0;
+    height: 100lvh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
     background-color: var(--color-one);
+}
+
+.content-section {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    box-shadow: 0 0 15px black;
+}
+
+canvas {
+    display: block;
+    width: 100%;
+    height: 100%;
 }
