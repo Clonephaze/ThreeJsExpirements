@@ -229,7 +229,7 @@ function startThree() {
     renderer.setPixelRatio(window.devicePixelRatio); // Ensure sharp rendering
     // GLTF Loader
     const loader = new three_addons_loaders_GLTFLoader_js__WEBPACK_IMPORTED_MODULE_1__.GLTFLoader();
-    loader.load('./src/models/lowPolyLivingRoom.gltf', function (gltf) {
+    loader.load('./src/Models/lowPolyLivingRoom.gltf', function (gltf) {
         scene.add(gltf.scene);
         // Adjust model's position and scale
         gltf.scene.position.set(0, -1, 0);

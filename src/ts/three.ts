@@ -41,7 +41,7 @@ export function startThree() {
     // GLTF Loader
     const loader: GLTFLoader = new GLTFLoader();
 
-    loader.load('./src/models/lowPolyLivingRoom.gltf', function (gltf) {
+    loader.load('./src/Models/lowPolyLivingRoom.gltf', function (gltf) {
         scene.add(gltf.scene);
 
         // Adjust model's position and scale
