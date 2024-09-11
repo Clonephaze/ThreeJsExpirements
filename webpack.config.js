@@ -70,8 +70,8 @@ module.exports = {
 			chunkFilename: "[id].css",
 		}),
 	],
-	devtool: 'source-map',
-	mode: 'development',
+	// devtool: 'source-map',
+	mode: 'production',
 	devServer: {
 		static: {
 			directory: path.join(__dirname),
