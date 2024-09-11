@@ -1,6 +1,8 @@
 import homeTemplate from '../html/home.html';
 import aboutTemplate from '../html/about.html';
 
+// Define a flag to determine if we're running on GitHub Pages
+const isGithubPages = window.location.hostname === 'clonephaze.github.io'; // Replace with your GitHub Pages domain
 
 /**
  * This function takes a hash string as an argument and updates the content of the page
@@ -26,7 +28,11 @@ function updateContentAndTitle(hash: string): void {
             // and redirect to the Home page
             template = homeTemplate;
             pageTitleText = 'Home';
-            window.location.href = window.location.origin + '#Home';
+            if (isGithubPages) {
+                window.location.href = window.location.origin + '/ThreeJsExpirements/#Home';
+            } else {
+                window.location.href = window.location.origin + '#Home';
+            }
             break;
     }
 
@@ -49,8 +55,21 @@ function updateContentAndTitle(hash: string): void {
  */
 export function loadHtmlOnLoad(): boolean {
     let loaded: boolean = false;
+    const urlPath = window.location.pathname; // Get the URL path
     const hash: string = window.location.hash.slice(1) || ''; // Get the hash from the URL
-    updateContentAndTitle(hash); // Call the function to update the page content and title
+
+    // Check if the URL path contains '/ThreeJsExpirements/' for GitHub Pages
+    if (isGithubPages && urlPath.includes('/ThreeJsExpirements/')) {
+        updateContentAndTitle(hash);
+    } else {
+        // Redirect to the correct path if '/ThreeJsExpirements/' is missing
+        if (isGithubPages) {
+            window.location.href = window.location.origin + '/ThreeJsExpirements/#' + hash;
+        } else {
+            updateContentAndTitle(hash);
+        }
+    }
+    
     setupNavigation(); // Call the function to set up the navigation
     loaded = true;
     return loaded;
@@ -65,11 +84,21 @@ export function loadHtmlOnLoad(): boolean {
 function setupNavigation(): void {
     // Add an event listener to the window object for the popstate event
     window.addEventListener('popstate', (event: PopStateEvent) => {
-        // Get the hash from the event state or the current URL if the event state is null
+        // Get the URL path and hash from the event state or the current URL
+        const urlPath = window.location.pathname;
         const hash = event.state?.hash || window.location.hash.slice(1) || '';
 
-        // Call the function to update the page content and title
-        updateContentAndTitle(hash);
+        // If the URL path contains '/ThreeJsExpirements/' for GitHub Pages, update the content and title
+        if (isGithubPages && urlPath.includes('/ThreeJsExpirements/')) {
+            updateContentAndTitle(hash);
+        } else {
+            // Redirect to the correct path if '/ThreeJsExpirements/' is missing
+            if (isGithubPages) {
+                window.location.href = window.location.origin + '/ThreeJsExpirements/#' + hash;
+            } else {
+                updateContentAndTitle(hash);
+            }
+        }
     });
     return;
 }

@@ -94,6 +94,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _html_about_html__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../html/about.html */ "./src/html/about.html");
 
 
+// Define a flag to determine if we're running on GitHub Pages
+const isGithubPages = window.location.hostname === 'clonephaze.github.io'; // Replace with your GitHub Pages domain
 /**
  * This function takes a hash string as an argument and updates the content of the page
  * and the page title based on the hash. If the hash is invalid, it redirects to the home page.
@@ -117,7 +119,12 @@ function updateContentAndTitle(hash) {
             // and redirect to the Home page
             template = _html_home_html__WEBPACK_IMPORTED_MODULE_0__["default"];
             pageTitleText = 'Home';
-            window.location.href = window.location.origin + '#Home';
+            if (isGithubPages) {
+                window.location.href = window.location.origin + '/ThreeJsExpirements/#Home';
+            }
+            else {
+                window.location.href = window.location.origin + '#Home';
+            }
             break;
     }
     // Get the content section element from the DOM
@@ -136,8 +143,21 @@ function updateContentAndTitle(hash) {
  */
 function loadHtmlOnLoad() {
     let loaded = false;
+    const urlPath = window.location.pathname; // Get the URL path
     const hash = window.location.hash.slice(1) || ''; // Get the hash from the URL
-    updateContentAndTitle(hash); // Call the function to update the page content and title
+    // Check if the URL path contains '/ThreeJsExpirements/' for GitHub Pages
+    if (isGithubPages && urlPath.includes('/ThreeJsExpirements/')) {
+        updateContentAndTitle(hash);
+    }
+    else {
+        // Redirect to the correct path if '/ThreeJsExpirements/' is missing
+        if (isGithubPages) {
+            window.location.href = window.location.origin + '/ThreeJsExpirements/#' + hash;
+        }
+        else {
+            updateContentAndTitle(hash);
+        }
+    }
     setupNavigation(); // Call the function to set up the navigation
     loaded = true;
     return loaded;
@@ -152,10 +172,22 @@ function setupNavigation() {
     // Add an event listener to the window object for the popstate event
     window.addEventListener('popstate', (event) => {
         var _a;
-        // Get the hash from the event state or the current URL if the event state is null
+        // Get the URL path and hash from the event state or the current URL
+        const urlPath = window.location.pathname;
         const hash = ((_a = event.state) === null || _a === void 0 ? void 0 : _a.hash) || window.location.hash.slice(1) || '';
-        // Call the function to update the page content and title
-        updateContentAndTitle(hash);
+        // If the URL path contains '/ThreeJsExpirements/' for GitHub Pages, update the content and title
+        if (isGithubPages && urlPath.includes('/ThreeJsExpirements/')) {
+            updateContentAndTitle(hash);
+        }
+        else {
+            // Redirect to the correct path if '/ThreeJsExpirements/' is missing
+            if (isGithubPages) {
+                window.location.href = window.location.origin + '/ThreeJsExpirements/#' + hash;
+            }
+            else {
+                updateContentAndTitle(hash);
+            }
+        }
     });
     return;
 }
